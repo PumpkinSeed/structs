@@ -25,6 +25,8 @@ var (
 	// add uintptr
 
 	// add complex types
+	complex64Type  = reflect.TypeOf(complex64(0))
+	complex128Type = reflect.TypeOf(complex128(0))
 
 	// add byte array type
 
@@ -59,6 +61,14 @@ func Contains(s, value interface{}) bool {
 			}
 		case float64Type:
 			if containsFloat64(field.Interface().(float64), value) {
+				return true
+			}
+		case complex64Type:
+			if containsComplex64(field.Interface().(complex64), value) {
+				return true
+			}
+		case complex128Type:
+			if containsComplex128(field.Interface().(complex128), value) {
 				return true
 			}
 		}
@@ -143,6 +153,26 @@ func containsFloat64(s float64, v interface{}) bool {
 	switch v.(type) {
 	case float64:
 		if v.(float64) == s {
+			return true
+		}
+	}
+	return false
+}
+
+func containsComplex64(s complex64, v interface{}) bool {
+	switch v.(type) {
+	case complex64:
+		if v.(complex64) == s {
+			return true
+		}
+	}
+	return false
+}
+
+func containsComplex128(s complex128, v interface{}) bool {
+	switch v.(type) {
+	case complex128:
+		if v.(complex128) == s {
 			return true
 		}
 	}
