@@ -125,15 +125,113 @@ func Index(s, value interface{}) int {
 	return -1
 }
 
+// FieldNameByValue returns the field's name of the first instance of the value in s
+func FieldNameByValue(s, value interface{}) string {
+	v1 := reflect.ValueOf(s)
+	t1 := reflect.TypeOf(s)
+	v2 := reflect.ValueOf(value)
+
+	for i := 0; i < v1.NumField(); i++ {
+		f := v1.Field(i)
+		if f.Type() == v2.Type() {
+			switch f.Type() {
+			case stringType:
+				if f.String() == v2.String() {
+					return t1.Field(i).Name
+				}
+			case intType, int8Type, int16Type, int32Type, int64Type:
+				if f.Int() == v2.Int() {
+					return t1.Field(i).Name
+				}
+			case boolType:
+				if f.Bool() == v2.Bool() {
+					return t1.Field(i).Name
+				}
+			case float32Type:
+				if f.Interface().(float32) == v2.Interface().(float32) {
+					return t1.Field(i).Name
+				}
+			case float64Type:
+				if f.Float() == v2.Float() {
+					return t1.Field(i).Name
+				}
+			case complex64Type:
+				if f.Interface().(complex64) == v2.Interface().(complex64) {
+					return t1.Field(i).Name
+				}
+			case complex128Type:
+				if f.Complex() == v2.Complex() {
+					return t1.Field(i).Name
+				}
+			}
+		}
+	}
+	return ""
+}
+
 /*
 func Map(s interface{}, f func(interface{}) error) error {
 	return nil
 }
+*/
 
 // Replace returns a copy of the struct s with the first n non-overlapping instance of old replaced by new
-func Replace(s, old, new interface{}, n int) error {
-	return nil
+func Replace(s, old, new interface{}, n int) (interface{}, error) {
+	v1 := reflect.Indirect(reflect.ValueOf(s))
+	//t1 := reflect.TypeOf(s)
+	oldV := reflect.ValueOf(old)
+	newV := reflect.ValueOf(new)
+
+	if oldV.Type() != newV.Type() {
+		return nil, errReplaceTypesNotMatching
+	}
+
+	var c = 0
+
+	for i := 0; i < v1.NumField(); i++ {
+		if n != -1 && c >= n {
+			return s, nil
+		}
+		f := v1.Field(i)
+		// @todo add and test all case
+		switch f.Type() {
+		case stringType:
+			if oldV.Type() == stringType &&
+				f.String() == oldV.String() {
+				f.SetString(newV.String())
+				c++
+			}
+		case intType, int8Type, int16Type, int32Type, int64Type:
+			if oldV.Type() == intType &&
+				f.Int() == oldV.Int() {
+				f.SetInt(newV.Int())
+				c++
+			}
+		case boolType:
+			if oldV.Type() == boolType &&
+				f.Bool() == oldV.Bool() {
+				f.SetInt(newV.Int())
+				c++
+			}
+		case float32Type, float64Type:
+			if oldV.Type() == float32Type &&
+				f.Float() == oldV.Float() {
+				f.SetFloat(newV.Float())
+				c++
+			}
+		case complex64Type, complex128Type:
+			if oldV.Type() == complex64Type &&
+				f.Complex() == oldV.Complex() {
+				f.SetComplex(newV.Complex())
+				c++
+			}
+		}
+	}
+	return s, nil
 }
+
+/*
+	Contains helper functions
 */
 func containsString(s string, v interface{}) bool {
 	switch v.(type) {

@@ -128,10 +128,98 @@ func main() {
 BenchmarkIndex-4             	 5000000	       242 ns/op
 ```
 
+## FieldNameByValue
+FieldNameByValue returns the field's name of the first instance of the value in struct
+
+```
+package main
+
+import "github.com/PumpkinSeed/structs"
+
+type Tst struct {
+    TestInt     int
+	TestInt8    int8
+	TestInt16   int16
+	TestInt32   int32
+	TestInt64   int64
+	TestString  string
+	TestBool    bool
+	TestFloat32 float32
+	TestFloat64 float64
+}
+
+func main() {
+    tst := Tst{
+        TestInt:     12,
+		TestInt8:    42,
+		TestInt16:   55,
+		TestInt32:   33,
+		TestInt64:   78,
+		TestString:  "test",
+		TestBool:    false,
+		TestFloat32: 13.444,
+		TestFloat64: 16.444,
+    }
+
+    result := FieldNameByValue(testStruct, "test") // TestString
+}
+```
+
+#### Benchmark
+
+```
+BenchmarkFieldNameByValue-4   	 5000000	       293 ns/op
+```
+
 ## Map
 _Not yet implemented_
 The second parameter is a function, apply the function on each field on the struct, or on the condition determined in the third argument
 
 ## Replace
-_Not yet implemented_
-Replace returns a copy of the struct with the first non-overlapping instance of old replaced by new
+Replace returns a copy of the struct with the first non-overlapping instance of old replaced by new, the last param (n) is the limit, if n < 0, there is no limit on the number of replacements
+
+```
+package main
+
+import "github.com/PumpkinSeed/structs"
+
+type Tst struct {
+    TestInt     int
+	TestInt8    int8
+	TestInt16   int16
+	TestInt32   int32
+	TestInt64   int64
+	TestString1    string
+	TestString2    string
+	TestString3    string
+	TestString4    string
+	TestBool    bool
+	TestFloat32 float32
+	TestFloat64 float64
+}
+
+func main() {
+    tst := Tst{
+        TestInt:     12,
+		TestInt8:    42,
+		TestInt16:   55,
+		TestInt32:   33,
+		TestInt64:   78,
+		TestString1:    "test",
+		TestString2:    "test",
+		TestString3:    "test",
+		TestString4:    "test",
+		TestBool:    false,
+		TestFloat32: 13.444,
+		TestFloat64: 16.444,
+    }
+
+    result, err := Replace(&ts, "test", "new", 2)
+}
+```
+
+#### Benchmark
+
+```
+BenchmarkReplace-4            	 2000000	       655 ns/op
+```

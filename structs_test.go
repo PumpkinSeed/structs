@@ -180,6 +180,85 @@ func TestIndex(t *testing.T) {
 	}
 }
 
+func TestFieldNameByValue(t *testing.T) {
+	testStruct := struct {
+		TestInt        int
+		TestInt8       int8
+		TestInt16      int16
+		TestInt32      int32
+		TestInt64      int64
+		TestString     string
+		TestBool       bool
+		TestFloat32    float32
+		TestFloat64    float64
+		TestComplex64  complex64
+		TestComplex128 complex128
+	}{
+		TestInt:        12,
+		TestInt8:       42,
+		TestInt16:      55,
+		TestInt32:      33,
+		TestInt64:      78,
+		TestString:     "test",
+		TestBool:       false,
+		TestFloat32:    13.444,
+		TestFloat64:    16.444,
+		TestComplex64:  12333,
+		TestComplex128: 123444455,
+	}
+
+	value := FieldNameByValue(testStruct, "test")
+	if value != "TestString" {
+		t.Errorf("Position should be 'TestString', instead of %s", value)
+	}
+}
+
+func TestReplace(t *testing.T) {
+	type testStruct struct {
+		TestInt        int
+		TestInt8       int8
+		TestInt16      int16
+		TestInt32      int32
+		TestInt64      int64
+		TestString1    string
+		TestString2    string
+		TestString3    string
+		TestString4    string
+		TestBool       bool
+		TestFloat32    float32
+		TestFloat64    float64
+		TestComplex64  complex64
+		TestComplex128 complex128
+	}
+	ts := testStruct{
+		TestInt:        12,
+		TestInt8:       42,
+		TestInt16:      55,
+		TestInt32:      33,
+		TestInt64:      78,
+		TestString1:    "test",
+		TestString2:    "test",
+		TestString3:    "test",
+		TestString4:    "test",
+		TestBool:       false,
+		TestFloat32:    13.444,
+		TestFloat64:    16.444,
+		TestComplex64:  12333,
+		TestComplex128: 123444455,
+	}
+
+	value, err := Replace(&ts, "test", "new", 2)
+	if err != nil {
+		t.Errorf("Error should be nil, instead of %s", err.Error())
+	}
+	if value.(*testStruct).TestString1 != "new" {
+		t.Errorf("TestString1 should be 'new', instead of %s", value.(testStruct).TestString1)
+	}
+	if value.(*testStruct).TestString3 != "test" {
+		t.Errorf("TestString1 should be 'test', instead of %s", value.(testStruct).TestString3)
+	}
+}
+
 /*
 	Benchmarks
 */
@@ -289,5 +368,63 @@ func BenchmarkIndex(b *testing.B) {
 
 	for n := 0; n < b.N; n++ {
 		Index(testStruct, "test")
+	}
+}
+
+func BenchmarkFieldNameByValue(b *testing.B) {
+	testStruct := struct {
+		TestInt     int
+		TestInt8    int8
+		TestInt16   int16
+		TestInt32   int32
+		TestInt64   int64
+		TestString  string
+		TestBool    bool
+		TestFloat32 float32
+		TestFloat64 float64
+	}{
+		TestInt:     12,
+		TestInt8:    42,
+		TestInt16:   55,
+		TestInt32:   33,
+		TestInt64:   78,
+		TestString:  "test",
+		TestBool:    false,
+		TestFloat32: 13.444,
+		TestFloat64: 16.444,
+	}
+
+	for n := 0; n < b.N; n++ {
+		FieldNameByValue(testStruct, "test")
+	}
+}
+
+func BenchmarkReplace(b *testing.B) {
+	type testStruct struct {
+		TestInt64      int64
+		TestString1    string
+		TestString2    string
+		TestString3    string
+		TestString4    string
+		TestBool       bool
+		TestFloat32    float32
+		TestFloat64    float64
+		TestComplex64  complex64
+		TestComplex128 complex128
+	}
+	ts := testStruct{
+		TestInt64:      78,
+		TestString1:    "test",
+		TestString2:    "test",
+		TestString3:    "test",
+		TestString4:    "test",
+		TestBool:       false,
+		TestFloat32:    13.444,
+		TestFloat64:    16.444,
+		TestComplex64:  12333,
+		TestComplex128: 123444455,
+	}
+	for n := 0; n < b.N; n++ {
+		Replace(&ts, "test", "new", 2)
 	}
 }
