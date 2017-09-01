@@ -37,6 +37,7 @@ var (
 	errorType = reflect.TypeOf(errors.New(""))
 )
 
+// Contains reports whether value is within s
 func Contains(s, value interface{}) bool {
 	v := reflect.ValueOf(s)
 	for i := 0; i < v.NumField(); i++ {
@@ -76,20 +77,61 @@ func Contains(s, value interface{}) bool {
 	return false
 }
 
-/*
+// Compare returns a boolean comparing two struct
 func Compare(a, b interface{}) bool {
-	return false
+	return reflect.DeepEqual(a, b)
 }
 
-func Index(s, value interface{}) string {
-	return ""
+// Index returns the index of the first instance of the value in s
+func Index(s, value interface{}) int {
+	v1 := reflect.ValueOf(s)
+	v2 := reflect.ValueOf(value)
+
+	for i := 0; i < v1.NumField(); i++ {
+		f := v1.Field(i)
+		if f.Type() == v2.Type() {
+			switch f.Type() {
+			case stringType:
+				if f.String() == v2.String() {
+					return i
+				}
+			case intType, int8Type, int16Type, int32Type, int64Type:
+				if f.Int() == v2.Int() {
+					return i
+				}
+			case boolType:
+				if f.Bool() == v2.Bool() {
+					return i
+				}
+			case float32Type:
+				if f.Interface().(float32) == v2.Interface().(float32) {
+					return i
+				}
+			case float64Type:
+				if f.Float() == v2.Float() {
+					return i
+				}
+			case complex64Type:
+				if f.Interface().(complex64) == v2.Interface().(complex64) {
+					return i
+				}
+			case complex128Type:
+				if f.Complex() == v2.Complex() {
+					return i
+				}
+			}
+		}
+	}
+	return -1
 }
 
+/*
 func Map(s interface{}, f func(interface{}) error) error {
 	return nil
 }
 
-func Replace(s, old, new interface{}) error {
+// Replace returns a copy of the struct s with the first n non-overlapping instance of old replaced by new
+func Replace(s, old, new interface{}, n int) error {
 	return nil
 }
 */
