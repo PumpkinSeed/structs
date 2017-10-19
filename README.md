@@ -228,3 +228,7 @@ func main() {
 ```
 BenchmarkReplace-4            	 2000000	       655 ns/op
 ```
+
+### ToDo
+- Upgrade GoDoc
+- Implement Map
