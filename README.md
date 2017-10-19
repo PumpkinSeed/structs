@@ -1,6 +1,9 @@
 # Golang structs
 Package structs implements simple functions to manipulate structs in Golang.
 
+[![Documentation](https://godoc.org/github.com/PumpkinSeed/structs?status.svg)](https://godoc.org/github.com/PumpkinSeed/structs)
+
+
 ## Get it
 
 ```
