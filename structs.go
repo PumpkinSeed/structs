@@ -193,7 +193,6 @@ func Replace(s, old, new interface{}, n int) (interface{}, error) {
 			return s, nil
 		}
 		f := v1.Field(i)
-		// @todo add and test all case
 		switch f.Type() {
 		case stringType:
 			if oldV.Type() == stringType &&
@@ -210,7 +209,7 @@ func Replace(s, old, new interface{}, n int) (interface{}, error) {
 		case boolType:
 			if oldV.Type() == boolType &&
 				f.Bool() == oldV.Bool() {
-				f.SetInt(newV.Int())
+				f.SetBool(newV.Bool())
 				c++
 			}
 		case float32Type, float64Type:
