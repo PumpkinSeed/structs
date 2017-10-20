@@ -123,7 +123,7 @@ func main() {
 		TestFloat64: 16.444,
     }
 
-    result := Index(testStruct, "test") // 5
+    result := structs.Index(testStruct, "test") // 5
 }
 ```
 
@@ -166,7 +166,7 @@ func main() {
 		TestFloat64: 16.444,
     }
 
-    result := FieldNameByValue(testStruct, "test") // TestString
+    result := structs.FieldNameByValue(testStruct, "test") // TestString
 }
 ```
 
@@ -177,8 +177,40 @@ BenchmarkFieldNameByValue-4   	 5000000	       293 ns/op
 ```
 
 ## Map
-_Not yet implemented_
 The second parameter is a function, apply the function on each field on the struct, or on the condition determined in the third argument
+
+```
+package main
+
+import "github.com/PumpkinSeed/structs"
+
+type Tst struct {
+	Username string
+	Title    string
+	Content  string
+}
+
+func main() {
+    tst := Tst{
+		Username: "PumpkinSeed",
+		Title:    "Test title",
+		Content:  "Test content",
+	}
+
+    result, err := structs.Map(&ts, func(v reflect.Value) error {
+		if v.Type() == stringType {
+			v.SetString(strings.ToLower(v.String()))
+		}
+		return nil
+	})
+}
+```
+
+#### Benchmark
+
+```
+BenchmarkMap-4                	 5000000	       268 ns/op
+```
 
 ## Replace
 Replace returns a copy of the struct with the first non-overlapping instance of old replaced by new, the last param (n) is the limit, if n < 0, there is no limit on the number of replacements
@@ -219,7 +251,7 @@ func main() {
 		TestFloat64: 16.444,
     }
 
-    result, err := Replace(&ts, "test", "new", 2)
+    result, err := structs.Replace(&ts, "test", "new", 2)
 }
 ```
 

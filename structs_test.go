@@ -1,6 +1,11 @@
 package structs
 
-import "testing"
+import (
+	"errors"
+	"reflect"
+	"strings"
+	"testing"
+)
 
 func TestContains(t *testing.T) {
 	testStruct := struct {
@@ -382,6 +387,39 @@ func TestReplace(t *testing.T) {
 	}
 }
 
+func TestMap(t *testing.T) {
+	type testStruct struct {
+		Username string
+		Title    string
+		Content  string
+	}
+	ts := testStruct{
+		Username: "PumpkinSeed",
+		Title:    "Test title",
+		Content:  "Test content",
+	}
+	res, err := Map(&ts, func(v reflect.Value) error {
+		if v.Type() == stringType {
+			v.SetString(strings.ToLower(v.String()))
+		}
+		return nil
+	})
+	if err != nil {
+		t.Errorf("Error should be nil, instead of %s", err.Error())
+	}
+	if res.(*testStruct).Username != "pumpkinseed" {
+		t.Errorf("Username should be 'pumpkinseed', instead of %s", res.(*testStruct).Username)
+	}
+
+	var testErr = errors.New("Test")
+	res, err = Map(&ts, func(v reflect.Value) error {
+		return testErr
+	})
+	if err != testErr {
+		t.Errorf("Error should be %s, instead of nil", testErr.Error())
+	}
+}
+
 /*
 	Benchmarks
 */
@@ -549,5 +587,26 @@ func BenchmarkReplace(b *testing.B) {
 	}
 	for n := 0; n < b.N; n++ {
 		Replace(&ts, "test", "new", 2)
+	}
+}
+
+func BenchmarkMap(b *testing.B) {
+	type testStruct struct {
+		Username string
+		Title    string
+		Content  string
+	}
+	ts := testStruct{
+		Username: "PumpkinSeed",
+		Title:    "Test title",
+		Content:  "Test content",
+	}
+	for n := 0; n < b.N; n++ {
+		Map(&ts, func(v reflect.Value) error {
+			if v.Type() == stringType {
+				v.SetString(strings.ToLower(v.String()))
+			}
+			return nil
+		})
 	}
 }

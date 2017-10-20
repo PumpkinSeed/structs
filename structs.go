@@ -1,3 +1,4 @@
+// Package structs implements simple functions to manipulate structs in Golang.
 package structs
 
 import (
@@ -169,11 +170,21 @@ func FieldNameByValue(s, value interface{}) string {
 	return ""
 }
 
-/*
-func Map(s interface{}, f func(interface{}) error) error {
-	return nil
+func Map(s interface{}, handler func(reflect.Value) error) (interface{}, error) {
+	v := reflect.Indirect(reflect.ValueOf(s))
+
+	for i := 0; i < v.NumField(); i++ {
+		f := v.Field(i)
+		if f.CanSet() {
+			err := handler(f)
+			if err != nil {
+				return nil, err
+			}
+		}
+
+	}
+	return s, nil
 }
-*/
 
 // Replace returns a copy of the struct s with the first n non-overlapping instance of old replaced by new
 func Replace(s, old, new interface{}, n int) (interface{}, error) {
@@ -218,12 +229,14 @@ func Replace(s, old, new interface{}, n int) (interface{}, error) {
 				f.SetFloat(newV.Float())
 				c++
 			}
+			// @todo add float64
 		case complex64Type, complex128Type:
 			if oldV.Type() == complex64Type &&
 				f.Complex() == oldV.Complex() {
 				f.SetComplex(newV.Complex())
 				c++
 			}
+			// @todo add complex128
 		}
 	}
 	return s, nil
