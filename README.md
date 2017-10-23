@@ -5,6 +5,7 @@ Package structs implements simple functions to manipulate structs in Golang.
 [![Go Report Card](https://goreportcard.com/badge/github.com/PumpkinSeed/structs)](https://goreportcard.com/report/github.com/PumpkinSeed/structs)
 [![license](https://img.shields.io/github/license/yangwenmai/how-to-add-badge-in-github-readme.svg?maxAge=2592000)](github.com/PumpkinSeed/structs/LICENSE.md)
 [![Build Status](https://travis-ci.org/PumpkinSeed/structs.svg?branch=master)](https://travis-ci.org/PumpkinSeed/structs)
+[![Awesome](https://cdn.rawgit.com/sindresorhus/awesome/d7305f38d29fed78fa85652e3a63e154dd8e8829/media/badge.svg)](https://github.com/avelino/awesome-go#utilities)
 
 
 ## Get it
